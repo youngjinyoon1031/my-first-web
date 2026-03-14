@@ -5,6 +5,37 @@
   <title>나만의 첫 웹사이트</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
+   .weekly-forecast {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 11px;
+      color: #9ca3af;
+    }
+    .weekly-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .weekly-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #e5e7eb;
+      white-space: nowrap;
+    }
+    .weekly-days {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .weekly-chip {
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(75, 85, 99, 0.9);
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+    }
+    
     * {
       box-sizing: border-box;
       margin: 0;
@@ -308,6 +339,16 @@ charts-section {
     <section>
       <div class="section-title-row">
         <div class="section-title">오늘의 날씨</div>
+        <div class="weekly-forecast">
+          <div class="weekly-row">
+            <span class="weekly-label">이천시 부발읍</span>
+            <div class="weekly-days" id="weekly-bubal"></div>
+          </div>
+          <div class="weekly-row">
+            <span class="weekly-label">원주시 단구동</span>
+            <div class="weekly-days" id="weekly-dangu"></div>
+          </div>
+        </div>
       </div>
 
       <div class="weather-grid" id="weatherGrid">
@@ -520,6 +561,45 @@ charts-section {
           return "🌡️";
       }
     }
+   function getShortKoreanDay(date) {
+      const days = ["일", "월", "화", "수", "목", "금", "토"];
+      return days[date.getDay()];
+    }
+    async function fetchWeeklyForecast(lat, lon, targetId) {
+      const container = document.getElementById(targetId);
+      if (!container) return;
+      container.textContent = "불러오는 중…";
+      try {
+        const url =
+          `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}` +
+          `&exclude=current,minutely,hourly,alerts&appid=${API_KEY}&units=metric&lang=kr`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (!res.ok || !data.daily) {
+          container.textContent = "예보 불러오기 실패";
+          return;
+        }
+        container.innerHTML = "";
+        // 오늘 포함 5일치만 표시
+        data.daily.slice(0, 5).forEach((day) => {
+          const d = new Date(day.dt * 1000);
+          const dow = getShortKoreanDay(d); // 요일
+          const max = Math.round(day.temp.max);
+          const min = Math.round(day.temp.min);
+          const main = day.weather && day.weather[0] ? day.weather[0].main : "";
+          const emoji = getWeatherEmoji(main);
+          const chip = document.createElement("div");
+          chip.className = "weekly-chip";
+          chip.textContent = `${dow} ${emoji} ${max}°/${min}°`;
+          container.appendChild(chip);
+        });
+      } catch (e) {
+        console.error("주간 예보 오류:", e);
+        container.textContent = "네트워크 오류";
+      }
+    }
+
+
     async function fetchWeatherForLocation(location) {
       const card = document.querySelector(
         `.weather-card[data-location-id="${location.id}"]`
@@ -568,7 +648,7 @@ charts-section {
         updatedEl.textContent = "다시 시도해 주세요";
       }
     }
-    function loadAllWeather() {
+     function loadAllWeather() {
       if (!API_KEY) {
         const cards = document.querySelectorAll(".weather-card");
         cards.forEach(card => {
@@ -579,9 +659,19 @@ charts-section {
         });
         return;
       }
-      LOCATIONS.forEach(loc => {
+      // 오늘의 날씨 카드
+      LOCATIONS.forEach((loc) => {
         fetchWeatherForLocation(loc);
       });
+      // 이번주 예보 (이천 부발읍 / 원주 단구동)
+      const bubal = LOCATIONS.find((l) => l.id === "icheon-bubal");
+      const dangu = LOCATIONS.find((l) => l.id === "wonju-dangu");
+      if (bubal) {
+        fetchWeeklyForecast(bubal.lat, bubal.lon, "weekly-bubal");
+      }
+      if (dangu) {
+        fetchWeeklyForecast(dangu.lat, dangu.lon, "weekly-dangu");
+      }
     }
       // 페이지가 로드되면 날짜 카운터 + 날씨 불러오기
     window.addEventListener("load", () => {
