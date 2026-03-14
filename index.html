@@ -95,22 +95,24 @@
       color: #9ca3af;
     }
 
-counter-banner {
-      margin: 8px 0 18px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(75, 85, 99, 0.9);
-      font-size: 12px;
+counter-card {
+      margin: 10px 0 18px;
+      padding: 10px 14px 9px;
+      border-radius: 14px;
+      background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.18), rgba(15, 23, 42, 0.98));
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-width: 260px;
+    }
+    .counter-title {
+      font-size: 13px;
+      font-weight: 600;
       color: #e5e7eb;
     }
-    .counter-label {
-      color: #9ca3af;
-    }
-    .counter-value {
+    .counter-days {
+      font-size: 18px;
       font-weight: 600;
       color: #facc15;
     }
@@ -301,9 +303,9 @@ charts-section {
     <h1>
       영진's <span>Website</span>
     </h1>
-
-    <div class="counter-banner">
-      <span class="counter-value" id="daysCounter">0일째</span>
+    <div class="counter-card">
+      <div class="counter-title">영똥 ♡ 혠</div>
+      <div class="counter-days" id="daysCounter">0일째</div>
     </div>
     
     <!-- 오늘의 날씨 섹션 -->
