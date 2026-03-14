@@ -442,54 +442,57 @@
     }
 
     async function fetchWeatherForLocation(location) {
-      const card = document.querySelector(
-        `.weather-card[data-location-id="${location.id}"]`
-      );
-      if (!card) return;
+  const card = document.querySelector(
+    `.weather-card[data-location-id="${location.id}"]`
+  );
+  if (!card) return;
 
-      const statusEl = card.querySelector('[data-role="status"]');
-      const tempEl = card.querySelector('[data-role="temp"]');
-      const extraEl = card.querySelector('[data-role="extra"]');
-      const updatedEl = card.querySelector('[data-role="updated"]');
+  const statusEl = card.querySelector('[data-role="status"]');
+  const tempEl = card.querySelector('[data-role="temp"]');
+  const extraEl = card.querySelector('[data-role="extra"]');
+  const updatedEl = card.querySelector('[data-role="updated"]');
 
-      statusEl.textContent = "불러오는 중…";
+  statusEl.textContent = "불러오는 중…";
+  updatedEl.textContent = "";
 
-      try {
-        const url =
-          `https://api.openweathermap.org/data/2.5/weather?lat=${location.lat}&lon=${location.lon}` +
-          `&appid=${API_KEY}&units=metric&lang=kr`;
+  try {
+    const url =
+      `https://api.openweathermap.org/data/2.5/weather?lat=${location.lat}&lon=${location.lon}` +
+      `&appid=${API_KEY}&units=metric&lang=kr`;
 
-        const res = await fetch(url);
-        if (!res.ok) {
-          throw new Error("HTTP " + res.status);
-        }
+    const res = await fetch(url);
+    const data = await res.json(); // 항상 JSON 먼저 파싱
 
-        const data = await res.json();
-
-        const description = data.weather && data.weather[0] ? data.weather[0].description : "정보 없음";
-        const temp = data.main ? Math.round(data.main.temp) : null;
-        const feelsLike = data.main ? Math.round(data.main.feels_like) : null;
-        const humidity = data.main ? data.main.humidity : null;
-
-        statusEl.textContent = description;
-        if (temp !== null) {
-          tempEl.innerHTML = `${temp}<span>°C</span>`;
-        } else {
-          tempEl.innerHTML = `-<span>°C</span>`;
-        }
-
-        extraEl.innerHTML =
-          `체감온도 ${feelsLike !== null ? feelsLike + "°C" : "-°C"}<br />` +
-          `습도 ${humidity !== null ? humidity + "%" : "-%"}`;
-
-        updatedEl.textContent = formatUpdatedTime(new Date());
-      } catch (error) {
-        console.error("날씨 불러오기 오류:", error);
-        statusEl.classList.add("weather-error");
-        statusEl.textContent = "불러오기 실패";
-        updatedEl.textContent = "다시 시도해 주세요";
-      }
+    if (!res.ok) {
+      // OpenWeather가 준 에러 메시지를 그대로 보여주기
+      const msg = data && data.message ? data.message : `HTTP ${res.status}`;
+      statusEl.classList.add("weather-error");
+      statusEl.textContent = `오류: ${msg}`;
+      tempEl.innerHTML = `-<span>°C</span>`;
+      extraEl.innerHTML = `체감온도 -°C<br />습도 -%`;
+      updatedEl.textContent = "API 오류";
+      return;
     }
+
+    const description = data.weather && data.weather[0] ? data.weather[0].description : "정보 없음";
+    const temp = data.main ? Math.round(data.main.temp) : null;
+    const feelsLike = data.main ? Math.round(data.main.feels_like) : null;
+    const humidity = data.main ? data.main.humidity : null;
+
+    statusEl.classList.remove("weather-error");
+    statusEl.textContent = description;
+    tempEl.innerHTML = `${temp}<span>°C</span>`;
+    extraEl.innerHTML =
+      `체감온도 ${feelsLike !== null ? feelsLike + "°C" : "-°C"}<br />` +
+      `습도 ${humidity !== null ? humidity + "%" : "-%"}`;
+    updatedEl.textContent = formatUpdatedTime(new Date());
+  } catch (error) {
+    console.error("날씨 불러오기 오류:", error);
+    statusEl.classList.add("weather-error");
+    statusEl.textContent = "네트워크 오류";
+    updatedEl.textContent = "다시 시도해 주세요";
+  }
+}
 
 function loadAllWeather() {
   // API 키가 비어 있지만 않으면 바로 호출
