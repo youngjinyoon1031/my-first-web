@@ -491,23 +491,23 @@
       }
     }
 
-    function loadAllWeather() {
-      if (!API_KEY || API_KEY === "1a04a426d72db15fbbb1182e24d7a27f") {
-        // API 키가 설정되지 않은 경우 안내 문구만 표시
-        const cards = document.querySelectorAll(".weather-card");
-        cards.forEach(card => {
-          const statusEl = card.querySelector('[data-role="status"]');
-          const updatedEl = card.querySelector('[data-role="updated"]');
-          statusEl.textContent = "API 키 필요";
-          updatedEl.textContent = "OpenWeather API 키를 설정해 주세요";
-        });
-        return;
-      }
+function loadAllWeather() {
+  // API 키가 비어 있지만 않으면 바로 호출
+  if (!API_KEY) {
+    const cards = document.querySelectorAll(".weather-card");
+    cards.forEach(card => {
+      const statusEl = card.querySelector('[data-role="status"]');
+      const updatedEl = card.querySelector('[data-role="updated"]');
+      statusEl.textContent = "API 키 필요";
+      updatedEl.textContent = "OpenWeather API 키를 설정해 주세요";
+    });
+    return;
+  }
 
-      LOCATIONS.forEach(loc => {
-        fetchWeatherForLocation(loc);
-      });
-    }
+  LOCATIONS.forEach(loc => {
+    fetchWeatherForLocation(loc);
+  });
+}
 
     // 페이지가 로드되면 자동으로 날씨 불러오기
     window.addEventListener("load", loadAllWeather);
