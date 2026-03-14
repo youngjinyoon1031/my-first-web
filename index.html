@@ -352,16 +352,14 @@
     </div>
   </main>
 
-  <script>
+<script>
     // 알림 / 배경색 버튼 예제
     const helloBtn = document.getElementById("helloBtn");
     const colorBtn = document.getElementById("colorBtn");
     const body = document.body;
-
     helloBtn.addEventListener("click", () => {
       alert("안녕하세요! 지금 보고 있는 이 페이지가 당신의 첫 웹사이트 예제입니다 :)");
     });
-
     const gradients = [
       "linear-gradient(135deg, #0f172a, #1e293b)",
       "linear-gradient(135deg, #1d1b3a, #312e81)",
@@ -369,18 +367,15 @@
       "linear-gradient(135deg, #020617, #4c1d95)"
     ];
     let index = 0;
-
     colorBtn.addEventListener("click", () => {
       index = (index + 1) % gradients.length;
       body.style.background = gradients[index];
     });
-
     // ===== OpenWeather API를 이용한 오늘의 날씨 =====
     // 1) 여기에 본인 OpenWeather API 키를 넣어주세요.
     //    예: const API_KEY = "abcd1234....";
     const API_KEY = "cacbfd85a4029b80be1a0d13fcf12c32";
-
-    // 2) 조회할 위치 목록 (위도, 경도는 대략적인 값)
+  // 2) 조회할 위치 목록 (위도, 경도는 대략적인 값)
     const LOCATIONS = [
       {
         id: "incheon-seo",
@@ -407,86 +402,103 @@
         lon: 127.943
       }
     ];
-
     function formatUpdatedTime(date) {
       const h = date.getHours().toString().padStart(2, "0");
       const m = date.getMinutes().toString().padStart(2, "0");
       return `${h}:${m} 기준`;
     }
-
-    async function fetchWeatherForLocation(location) {
-  const card = document.querySelector(
-    `.weather-card[data-location-id="${location.id}"]`
-  );
-  if (!card) return;
-
-  const statusEl = card.querySelector('[data-role="status"]');
-  const tempEl = card.querySelector('[data-role="temp"]');
-  const extraEl = card.querySelector('[data-role="extra"]');
-  const updatedEl = card.querySelector('[data-role="updated"]');
-
-  statusEl.textContent = "불러오는 중…";
-  updatedEl.textContent = "";
-
-  try {
-    const url =
-      `https://api.openweathermap.org/data/2.5/weather?lat=${location.lat}&lon=${location.lon}` +
-      `&appid=${API_KEY}&units=metric&lang=kr`;
-
-    const res = await fetch(url);
-    const data = await res.json(); // 항상 JSON 먼저 파싱
-
-    if (!res.ok) {
-      // OpenWeather가 준 에러 메시지를 그대로 보여주기
-      const msg = data && data.message ? data.message : `HTTP ${res.status}`;
-      statusEl.classList.add("weather-error");
-      statusEl.textContent = `오류: ${msg}`;
-      tempEl.innerHTML = `-<span>°C</span>`;
-      extraEl.innerHTML = `체감온도 -°C<br />습도 -%`;
-      updatedEl.textContent = "API 오류";
-      return;
+    // 날씨 상태(맑음, 비, 눈 등)에 따라 이모지 선택
+    function getWeatherEmoji(main) {
+      switch (main) {
+        case "Clear":
+          return "☀️";
+        case "Clouds":
+          return "☁️";
+        case "Rain":
+          return "🌧";
+        case "Drizzle":
+          return "🌦";
+        case "Thunderstorm":
+          return "⛈";
+        case "Snow":
+          return "❄️";
+        case "Mist":
+        case "Fog":
+        case "Haze":
+        case "Smoke":
+        case "Dust":
+        case "Sand":
+          return "🌫";
+        default:
+          return "🌡️";
+      }
     }
-
-    const description = data.weather && data.weather[0] ? data.weather[0].description : "정보 없음";
-    const temp = data.main ? Math.round(data.main.temp) : null;
-    const feelsLike = data.main ? Math.round(data.main.feels_like) : null;
-    const humidity = data.main ? data.main.humidity : null;
-
-    statusEl.classList.remove("weather-error");
-    statusEl.textContent = description;
-    tempEl.innerHTML = `${temp}<span>°C</span>`;
-    extraEl.innerHTML =
-      `체감온도 ${feelsLike !== null ? feelsLike + "°C" : "-°C"}<br />` +
-      `습도 ${humidity !== null ? humidity + "%" : "-%"}`;
-    updatedEl.textContent = formatUpdatedTime(new Date());
-  } catch (error) {
-    console.error("날씨 불러오기 오류:", error);
-    statusEl.classList.add("weather-error");
-    statusEl.textContent = "네트워크 오류";
-    updatedEl.textContent = "다시 시도해 주세요";
-  }
-}
-
-function loadAllWeather() {
-  // API 키가 비어 있지만 않으면 바로 호출
-  if (!API_KEY) {
-    const cards = document.querySelectorAll(".weather-card");
-    cards.forEach(card => {
+    async function fetchWeatherForLocation(location) {
+      const card = document.querySelector(
+        `.weather-card[data-location-id="${location.id}"]`
+      );
+      if (!card) return;
       const statusEl = card.querySelector('[data-role="status"]');
+      const tempEl = card.querySelector('[data-role="temp"]');
+      const extraEl = card.querySelector('[data-role="extra"]');
       const updatedEl = card.querySelector('[data-role="updated"]');
-      statusEl.textContent = "API 키 필요";
-      updatedEl.textContent = "OpenWeather API 키를 설정해 주세요";
-    });
-    return;
-  }
-
-  LOCATIONS.forEach(loc => {
-    fetchWeatherForLocation(loc);
-  });
-}
-
+      statusEl.textContent = "불러오는 중…";
+      updatedEl.textContent = "";
+      try {
+        const url =
+          `https://api.openweathermap.org/data/2.5/weather?lat=${location.lat}&lon=${location.lon}` +
+          `&appid=${API_KEY}&units=metric&lang=kr`;
+        const res = await fetch(url);
+        const data = await res.json(); // 항상 JSON 먼저 파싱
+        if (!res.ok) {
+          const msg = data && data.message ? data.message : `HTTP ${res.status}`;
+          statusEl.classList.add("weather-error");
+          statusEl.textContent = `오류: ${msg}`;
+          tempEl.innerHTML = `-<span>°C</span>`;
+          extraEl.innerHTML = `체감온도 -°C<br />습도 -%`;
+          updatedEl.textContent = "API 오류";
+          return;
+        }
+        const weatherObj = data.weather && data.weather[0] ? data.weather[0] : null;
+        const main = weatherObj ? weatherObj.main : "";
+        const description = weatherObj ? weatherObj.description : "정보 없음";
+        const emoji = getWeatherEmoji(main);
+        const temp = data.main ? Math.round(data.main.temp) : null;
+        const feelsLike = data.main ? Math.round(data.main.feels_like) : null;
+        const humidity = data.main ? data.main.humidity : null;
+        statusEl.classList.remove("weather-error");
+        // 👉 이모지 + 설명(예: "☀️ 맑음")
+        statusEl.textContent = `${emoji} ${description}`;
+        tempEl.innerHTML = `${temp}<span>°C</span>`;
+        extraEl.innerHTML =
+          `체감온도 ${feelsLike !== null ? feelsLike + "°C" : "-°C"}<br />` +
+          `습도 ${humidity !== null ? humidity + "%" : "-%"}`;
+        updatedEl.textContent = formatUpdatedTime(new Date());
+      } catch (error) {
+        console.error("날씨 불러오기 오류:", error);
+        statusEl.classList.add("weather-error");
+        statusEl.textContent = "네트워크 오류";
+        updatedEl.textContent = "다시 시도해 주세요";
+      }
+    }
+    function loadAllWeather() {
+      if (!API_KEY) {
+        const cards = document.querySelectorAll(".weather-card");
+        cards.forEach(card => {
+          const statusEl = card.querySelector('[data-role="status"]');
+          const updatedEl = card.querySelector('[data-role="updated"]');
+          statusEl.textContent = "API 키 필요";
+          updatedEl.textContent = "OpenWeather API 키를 설정해 주세요";
+        });
+        return;
+      }
+      LOCATIONS.forEach(loc => {
+        fetchWeatherForLocation(loc);
+      });
+    }
     // 페이지가 로드되면 자동으로 날씨 불러오기
     window.addEventListener("load", loadAllWeather);
   </script>
+    
 </body>
 </html>
