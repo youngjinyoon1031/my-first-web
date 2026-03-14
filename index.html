@@ -302,6 +302,10 @@ charts-section {
       영진's <span>Website</span>
     </h1>
 
+    <div class="counter-banner">
+      <span class="counter-value" id="daysCounter">0일째</span>
+    </div>
+    
     <!-- 오늘의 날씨 섹션 -->
     <section>
       <div class="section-title-row">
@@ -424,6 +428,22 @@ charts-section {
   </main>
 
 <script>
+  
+    function updateDaysCounter() {
+      // 기준 날짜: 2025-08-02 (월은 0부터 시작하므로 7이 8월)
+      const start = new Date(2025, 7, 2);
+      const today = new Date();
+      // 시·분·초는 버리고 날짜 기준으로만 계산
+      start.setHours(0, 0, 0, 0);
+      today.setHours(0, 0, 0, 0);
+      const diffMs = today.getTime() - start.getTime();
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      const el = document.getElementById("daysCounter");
+      if (!el) return;
+      el.textContent = `${diffDays}일째`;
+    }
+
+
     // 알림 / 배경색 버튼 예제
     const helloBtn = document.getElementById("helloBtn");
     const colorBtn = document.getElementById("colorBtn");
@@ -567,8 +587,11 @@ charts-section {
         fetchWeatherForLocation(loc);
       });
     }
-    // 페이지가 로드되면 자동으로 날씨 불러오기
-    window.addEventListener("load", loadAllWeather);
+      // 페이지가 로드되면 날짜 카운터 + 날씨 불러오기
+    window.addEventListener("load", () => {
+      updateDaysCounter();
+      loadAllWeather();
+    });
   </script>
     
 </body>
