@@ -22,7 +22,7 @@
     }
     .card {
       width: 100%;
-      max-width: 720px;
+      max-width: 900px;
       background: rgba(15, 23, 42, 0.92);
       border-radius: 18px;
       padding: 28px 28px 24px;
@@ -68,7 +68,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
       gap: 14px;
-      margin-bottom: 22px;
+      margin-bottom: 28px;
     }
     .feature {
       padding: 12px 12px 11px;
@@ -94,6 +94,98 @@
       font-size: 12px;
       color: #9ca3af;
     }
+
+    /* 오늘의 날씨 섹션 */
+    .section-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+      margin-top: 4px;
+    }
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .section-caption {
+      font-size: 12px;
+      color: #9ca3af;
+    }
+
+    .weather-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .weather-card {
+      border-radius: 14px;
+      padding: 12px 12px 10px;
+      background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.15), rgba(15, 23, 42, 0.98));
+      border: 1px solid rgba(55, 65, 81, 0.85);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-height: 90px;
+    }
+    .weather-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+    }
+    .weather-location {
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .weather-status {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(75, 85, 99, 0.9);
+      color: #e5e7eb;
+      max-width: 80px;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .weather-main-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-top: 2px;
+    }
+    .weather-temp {
+      font-size: 22px;
+      font-weight: 600;
+    }
+    .weather-temp span {
+      font-size: 13px;
+      color: #9ca3af;
+      margin-left: 2px;
+    }
+    .weather-extra {
+      font-size: 11px;
+      color: #9ca3af;
+      text-align: right;
+    }
+    .weather-updated {
+      font-size: 10px;
+      color: #6b7280;
+      margin-top: 2px;
+    }
+    .weather-loading {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 4px;
+    }
+    .weather-error {
+      font-size: 11px;
+      color: #fca5a5;
+      margin-top: 4px;
+    }
+
     .footer {
       display: flex;
       justify-content: space-between;
@@ -176,9 +268,10 @@
 
     <p class="subtitle">
       이 페이지는 HTML + CSS + 아주 간단한 JavaScript 만으로 만들어졌어요.<br />
-      아래 버튼을 눌러서 작은 인터랙션을 직접 느껴보세요.
+      아래 버튼과 날씨 카드를 눌러서 작은 인터랙션을 직접 느껴보세요.
     </p>
 
+    <!-- 기본 설명 섹션 -->
     <section class="grid">
       <article class="feature">
         <div class="feature-title">HTML</div>
@@ -200,6 +293,76 @@
       </article>
     </section>
 
+    <!-- 오늘의 날씨 섹션 -->
+    <section>
+      <div class="section-title-row">
+        <div class="section-title">오늘의 날씨</div>
+        <div class="section-caption">인천 서구 · 서울 강서구 · 이천시 부발읍 · 원주시 단구동</div>
+      </div>
+
+      <div class="weather-grid" id="weatherGrid">
+        <article class="weather-card" data-location-id="incheon-seo">
+          <div class="weather-header">
+            <div class="weather-location">인천 서구</div>
+            <div class="weather-status" data-role="status">로딩중…</div>
+          </div>
+          <div class="weather-main-row">
+            <div class="weather-temp" data-role="temp">-<span>°C</span></div>
+            <div class="weather-extra" data-role="extra">
+              체감온도 -°C<br />
+              습도 -%
+            </div>
+          </div>
+          <div class="weather-updated" data-role="updated">업데이트 준비중</div>
+        </article>
+
+        <article class="weather-card" data-location-id="seoul-gangseo">
+          <div class="weather-header">
+            <div class="weather-location">서울 강서구</div>
+            <div class="weather-status" data-role="status">로딩중…</div>
+          </div>
+          <div class="weather-main-row">
+            <div class="weather-temp" data-role="temp">-<span>°C</span></div>
+            <div class="weather-extra" data-role="extra">
+              체감온도 -°C<br />
+              습도 -%
+            </div>
+          </div>
+          <div class="weather-updated" data-role="updated">업데이트 준비중</div>
+        </article>
+
+        <article class="weather-card" data-location-id="icheon-bubal">
+          <div class="weather-header">
+            <div class="weather-location">이천시 부발읍</div>
+            <div class="weather-status" data-role="status">로딩중…</div>
+          </div>
+          <div class="weather-main-row">
+            <div class="weather-temp" data-role="temp">-<span>°C</span></div>
+            <div class="weather-extra" data-role="extra">
+              체감온도 -°C<br />
+              습도 -%
+            </div>
+          </div>
+          <div class="weather-updated" data-role="updated">업데이트 준비중</div>
+        </article>
+
+        <article class="weather-card" data-location-id="wonju-dangu">
+          <div class="weather-header">
+            <div class="weather-location">원주시 단구동</div>
+            <div class="weather-status" data-role="status">로딩중…</div>
+          </div>
+          <div class="weather-main-row">
+            <div class="weather-temp" data-role="temp">-<span>°C</span></div>
+            <div class="weather-extra" data-role="extra">
+              체감온도 -°C<br />
+              습도 -%
+            </div>
+          </div>
+          <div class="weather-updated" data-role="updated">업데이트 준비중</div>
+        </article>
+      </div>
+    </section>
+
     <div class="footer">
       <div class="btn-row">
         <button id="helloBtn">
@@ -217,6 +380,7 @@
   </main>
 
   <script>
+    // 알림 / 배경색 버튼 예제
     const helloBtn = document.getElementById("helloBtn");
     const colorBtn = document.getElementById("colorBtn");
     const body = document.body;
@@ -237,6 +401,116 @@
       index = (index + 1) % gradients.length;
       body.style.background = gradients[index];
     });
+
+    // ===== OpenWeather API를 이용한 오늘의 날씨 =====
+    // 1) 여기에 본인 OpenWeather API 키를 넣어주세요.
+    //    예: const API_KEY = "abcd1234....";
+    const API_KEY = "1a04a426d72db15fbbb1182e24d7a27f";
+
+    // 2) 조회할 위치 목록 (위도, 경도는 대략적인 값)
+    const LOCATIONS = [
+      {
+        id: "incheon-seo",
+        name: "인천 서구",
+        lat: 37.545,
+        lon: 126.675
+      },
+      {
+        id: "seoul-gangseo",
+        name: "서울 강서구",
+        lat: 37.561,
+        lon: 126.822
+      },
+      {
+        id: "icheon-bubal",
+        name: "이천시 부발읍",
+        lat: 37.272,
+        lon: 127.484
+      },
+      {
+        id: "wonju-dangu",
+        name: "원주시 단구동",
+        lat: 37.335,
+        lon: 127.943
+      }
+    ];
+
+    function formatUpdatedTime(date) {
+      const h = date.getHours().toString().padStart(2, "0");
+      const m = date.getMinutes().toString().padStart(2, "0");
+      return `${h}:${m} 기준`;
+    }
+
+    async function fetchWeatherForLocation(location) {
+      const card = document.querySelector(
+        `.weather-card[data-location-id="${location.id}"]`
+      );
+      if (!card) return;
+
+      const statusEl = card.querySelector('[data-role="status"]');
+      const tempEl = card.querySelector('[data-role="temp"]');
+      const extraEl = card.querySelector('[data-role="extra"]');
+      const updatedEl = card.querySelector('[data-role="updated"]');
+
+      statusEl.textContent = "불러오는 중…";
+
+      try {
+        const url =
+          `https://api.openweathermap.org/data/2.5/weather?lat=${location.lat}&lon=${location.lon}` +
+          `&appid=${API_KEY}&units=metric&lang=kr`;
+
+        const res = await fetch(url);
+        if (!res.ok) {
+          throw new Error("HTTP " + res.status);
+        }
+
+        const data = await res.json();
+
+        const description = data.weather && data.weather[0] ? data.weather[0].description : "정보 없음";
+        const temp = data.main ? Math.round(data.main.temp) : null;
+        const feelsLike = data.main ? Math.round(data.main.feels_like) : null;
+        const humidity = data.main ? data.main.humidity : null;
+
+        statusEl.textContent = description;
+        if (temp !== null) {
+          tempEl.innerHTML = `${temp}<span>°C</span>`;
+        } else {
+          tempEl.innerHTML = `-<span>°C</span>`;
+        }
+
+        extraEl.innerHTML =
+          `체감온도 ${feelsLike !== null ? feelsLike + "°C" : "-°C"}<br />` +
+          `습도 ${humidity !== null ? humidity + "%" : "-%"}`;
+
+        updatedEl.textContent = formatUpdatedTime(new Date());
+      } catch (error) {
+        console.error("날씨 불러오기 오류:", error);
+        statusEl.classList.add("weather-error");
+        statusEl.textContent = "불러오기 실패";
+        updatedEl.textContent = "다시 시도해 주세요";
+      }
+    }
+
+    function loadAllWeather() {
+      if (!API_KEY || API_KEY === "1a04a426d72db15fbbb1182e24d7a27f") {
+        // API 키가 설정되지 않은 경우 안내 문구만 표시
+        const cards = document.querySelectorAll(".weather-card");
+        cards.forEach(card => {
+          const statusEl = card.querySelector('[data-role="status"]');
+          const updatedEl = card.querySelector('[data-role="updated"]');
+          statusEl.textContent = "API 키 필요";
+          updatedEl.textContent = "OpenWeather API 키를 설정해 주세요";
+        });
+        return;
+      }
+
+      LOCATIONS.forEach(loc => {
+        fetchWeatherForLocation(loc);
+      });
+    }
+
+    // 페이지가 로드되면 자동으로 날씨 불러오기
+    window.addEventListener("load", loadAllWeather);
   </script>
 </body>
 </html>
